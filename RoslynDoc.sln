@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibHelper", "LibHelper\LibHelper.csproj", "{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BauControls", "BauControls\BauControls.csproj", "{F62C525C-5A46-46E1-BD18-450ACAF06E26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMarkupLanguage", "LibMarkupLanguage\LibMarkupLanguage.csproj", "{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controls", "Controls", "{382D501B-82AA-410D-8899-102659B4FEC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{FE1362BA-310E-489C-86F4-A630C909BA18}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roslyn", "Roslyn", "{6A64C239-4443-4CE7-B3D9-E53F2D207EAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibRoslynManager", "LibRoslynManager\LibRoslynManager.csproj", "{DE28E7DC-6E16-468D-9B11-B64BCE7AF327}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibRoslynDocument", "LibRoslynDocument\LibRoslynDocument.csproj", "{F8A09B5B-83A1-4C35-B965-8468399F4523}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDoc", "RoslynDoc\RoslynDoc.csproj", "{5CBDD17F-2CB1-4217-B6EE-443981708FD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62C525C-5A46-46E1-BD18-450ACAF06E26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62C525C-5A46-46E1-BD18-450ACAF06E26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62C525C-5A46-46E1-BD18-450ACAF06E26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62C525C-5A46-46E1-BD18-450ACAF06E26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE28E7DC-6E16-468D-9B11-B64BCE7AF327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE28E7DC-6E16-468D-9B11-B64BCE7AF327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE28E7DC-6E16-468D-9B11-B64BCE7AF327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE28E7DC-6E16-468D-9B11-B64BCE7AF327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8A09B5B-83A1-4C35-B965-8468399F4523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8A09B5B-83A1-4C35-B965-8468399F4523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8A09B5B-83A1-4C35-B965-8468399F4523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8A09B5B-83A1-4C35-B965-8468399F4523}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CBDD17F-2CB1-4217-B6EE-443981708FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBDD17F-2CB1-4217-B6EE-443981708FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBDD17F-2CB1-4217-B6EE-443981708FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CBDD17F-2CB1-4217-B6EE-443981708FD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D9E2DC6B-3E54-421F-9231-A4F3A799BC4C} = {FE1362BA-310E-489C-86F4-A630C909BA18}
+		{F62C525C-5A46-46E1-BD18-450ACAF06E26} = {382D501B-82AA-410D-8899-102659B4FEC9}
+		{CB50D1D9-55E4-4A2B-8EC7-0ADDE8D7E3BD} = {FE1362BA-310E-489C-86F4-A630C909BA18}
+		{DE28E7DC-6E16-468D-9B11-B64BCE7AF327} = {6A64C239-4443-4CE7-B3D9-E53F2D207EAA}
+		{F8A09B5B-83A1-4C35-B965-8468399F4523} = {6A64C239-4443-4CE7-B3D9-E53F2D207EAA}
+	EndGlobalSection
+EndGlobal
