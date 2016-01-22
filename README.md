@@ -69,9 +69,7 @@ Este nodo semántico proporciona información sobre la declaración: en una clas
 los agumentos y el valor de retorno, etc... Así sólo tenemos que transformar este nodo semántico en una de las clases
 de modelo que posteriormente utilizaremos para documentar. Por ejemplo, una clase se transforma con un método similar a este:
 
-/// 
-///	Interpreta una clase
-/// 
+...
 private void ParseClass(SyntaxNode objNode, LanguageStructModel objParent)
 {	ClassModel objClass = objParent.Items.CreateClass(objParent);
 	INamedTypeSymbol objSymbol = objTreeSemantic.GetDeclaredSymbol(objNode as ClassDeclarationSyntax);
@@ -84,8 +82,12 @@ private void ParseClass(SyntaxNode objNode, LanguageStructModel objParent)
 	objClass.IsAbstract = objSymbol.IsAbstract;
 	// Obtiene los métodos, propiedades y demás
 	ParseChilds(objNode, objComplex);
-	..........
+	
+	// Se omite el resto del código
+	
 }
+...
+
 Como se puede apreciar del código anterior, todas las clases de modelo derivan de la clase LanguageStructModel que aparte
 de los datos básicos como nombre, tipo y espacio de nombres incluyen una colección de tipo LanguageStructModel . Es decir, 
 se trata de una estructura recursiva. Dentro de un objeto de espacio de nombres podremos tener interfaces, clases, 
@@ -100,13 +102,13 @@ compilación. En el caso que nos ocupa además nos ofrecen algo muy interesante:
 documentación. De hecho, en la última versión ya no es necesario recorrer los nodos trivia, podemos recogerlos
 directamente utilizando el método GetDocumentationCommentXml () de los nodos semánticos:
 
-/// 
-///	Inicializa los datos de la estructura
-/// 
+...
 private void AssignRemarksXML(LanguageStructModel objStructItem, ISymbol objSymbol)
 { if (objSymbol != null)
 	objStructItem.RemarksXml.RawXml = objSymbol.GetDocumentationCommentXml();
 }
+...
+
 Con este último añadido al terminar el proceso de interpretación tenemos ya nuestra estructura jerárquica de espacios de nombres, 
 clases, métodos, etc... que podemos pasar a la siguiente librería para generar la documentación.
 
