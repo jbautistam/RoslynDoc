@@ -20,9 +20,7 @@ parten del XML generado en la compilación y lo combinan con la información de 
 De esta forma obtienen la documentación final.
 
 Esto no supone ningún problema, pero la llegada de Roslyn abre paso a nuevas herramientas que podemos utilizar a la 
-hora de documentar nuestro código. Como estamos viendo en la serie de artículos sobre Roslyn de esta misma Web, 
-ahora disponemos de una API completa para acceder al código fuente y a la estructura de definición de clases de 
-nuestros proyectos.
+hora de documentar nuestro código. Ahora ya disponemos de una API completa para acceder al código fuente y a la estructura de definición de clases de nuestros proyectos.
 
 Aprovechando esta API podemos leer el código fuente de un proyecto o una solución, recorrer sus estructuras y 
 generar la documentación. Esto es precisamente lo que intento con mi nuevo proyecto que, a falta de un nombre 
