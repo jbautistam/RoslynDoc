@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Templates>
+	<Page StructType ="NameSpace" File = "ClassTemplate.tpt" RootTemplate="RootTemplate.tpt" />
+	<Page StructType ="Class" File = "ClassTemplate.tpt" RootTemplate="RootTemplate.tpt" />
+	<Page StructType ="Interface" File = "ClassTemplate.tpt" RootTemplate="RootTemplate.tpt" />
+	<Page StructType ="Struct" File = "ClassTemplate.tpt" RootTemplate="RootTemplate.tpt" />
+</Templates>
