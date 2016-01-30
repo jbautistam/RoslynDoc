@@ -1,6 +1,7 @@
 ﻿using System;
 
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols;
+using Bau.Libraries.LibHelper.Extensors;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols;
 using Bau.Libraries.LibRoslynDocument.Models.Documents;
 using Bau.Libraries.LibRoslynDocument.Processor.Writers;
 
@@ -19,8 +20,41 @@ namespace Bau.Libraries.LibRoslynDocument
 		/// <summary>
 		///		Genera la documentación a partir de un archivo de proyecto o solución
 		/// </summary>
-		public DocumentFileModelCollection Process(string strProjectFileName)
-		{ return Process(strProjectFileName, GetDocumentWriter());
+		public DocumentFileModelCollection Process(ProgramModel objProgram, IDocumentWriter objWriter = null)
+		{ // Obtiene el generador
+				if (objWriter == null)
+					objWriter = GetDocumentWriter();
+			// Guarda el generador
+				Writer = objWriter;
+			// Copia el contenido del directorio de plantillas
+				CopyTemplates();
+			// Genera la documentación
+				return new Processor.ProgramDocumentationGenerator(this).Process(objProgram);
+		}
+
+		/// <summary>
+		///		Copia los archivos del directorio donde se encuentran las plantillas
+		/// </summary>
+		private void CopyTemplates()
+		{ string strPathTemplate = Parameters.TemplateFileName;
+
+				if (!strPathTemplate.IsEmpty())
+					{ // Obtiene el directorio
+							strPathTemplate = System.IO.Path.GetDirectoryName(strPathTemplate);
+						// Si existe el directorio
+							if (System.IO.Directory.Exists(strPathTemplate))
+								{ string [] arrStrPath = System.IO.Directory.GetDirectories(strPathTemplate);
+									string [] arrStrFiles = System.IO.Directory.GetFiles(strPathTemplate);
+
+										// Copia los directorios
+											foreach (string strPath in arrStrPath)
+												LibHelper.Files.HelperFiles.CopyPath(strPath, System.IO.Path.Combine(OutputPath, System.IO.Path.GetFileName(strPath)));
+										// Copia los archivos (excepto las plantillas)
+											foreach (string strFile in arrStrFiles)
+												if (!strFile.EndsWith(".tpt", StringComparison.CurrentCultureIgnoreCase))
+													LibHelper.Files.HelperFiles.CopyFile(strFile, System.IO.Path.Combine(OutputPath, System.IO.Path.GetFileName(strFile)));
+								}
+					}
 		}
 
 		/// <summary>
@@ -40,18 +74,6 @@ namespace Bau.Libraries.LibRoslynDocument
 		}
 
 		/// <summary>
-		///		Genera la documentación a partir de un archivo de proyecto o solución
-		/// </summary>
-		public DocumentFileModelCollection Process(string strProjectFileName, IDocumentWriter objWriter)
-		{ ProgramModel objProgram = new LibRoslynManager.ProgramParser().ParseSolution(strProjectFileName);
-
-				// Guarda el generador
-					Writer = objWriter;
-				// Genera la documentación
-					return new Processor.ProgramDocumentationGenerator(this).Process(objProgram);
-		}
-
-		/// <summary>
 		///		Parámetros de documentación
 		/// </summary>
 		public DocumentationParameters Parameters { get; }
@@ -60,6 +82,11 @@ namespace Bau.Libraries.LibRoslynDocument
 		///		Directorio de salida
 		/// </summary>
 		public string OutputPath { get; }
+
+		/// <summary>
+		///		Errores de la documentación
+		/// </summary>
+		public System.Collections.Generic.List<string> Errors { get; } = new System.Collections.Generic.List<string>();
 
 		/// <summary>
 		///		Generador de la documentación

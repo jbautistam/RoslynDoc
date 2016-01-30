@@ -12,11 +12,11 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		/// <summary>
 		///		Graba la documentación en un archivo
 		/// </summary>
-		void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, string strPath);
+		void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, string strFileNameTemplate, string strPath);
 
 		/// <summary>
 		///		Graba la documentación a partir de los datos pasados como parámetros
 		/// </summary>
-		void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, string strPath);
+		void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, string strFileNameTemplate, string strPath);
 	}
 }

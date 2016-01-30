@@ -7,11 +7,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Bau.Libraries.LibHelper.Extensors;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Methods;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Simple;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Structs;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Methods;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Simple;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Structs;
 
 namespace Bau.Libraries.LibRoslynManager.Parser
 {
@@ -25,8 +25,8 @@ namespace Bau.Libraries.LibRoslynManager.Parser
 		/// <summary>
 		///		Interpreta un archivo
 		/// </summary>
-		internal CompilationUnitModel ParseFile(Models.Solutions.ProjectVisualStudioModel objProject, string strFileName)
-		{ CompilationUnitModel objUnit = new CompilationUnitModel(objProject, strFileName);
+		internal CompilationUnitModel ParseFile(string strFileName)
+		{ CompilationUnitModel objUnit = new CompilationUnitModel(strFileName);
 
 				// Interpreta el archivo
 					if (!System.IO.File.Exists(strFileName))
@@ -46,7 +46,7 @@ namespace Bau.Libraries.LibRoslynManager.Parser
 		///		Interpreta un texto
 		/// </summary>
 		internal CompilationUnitModel ParseText(string strText)
-		{ CompilationUnitModel objUnit = new CompilationUnitModel(null, "PlainText");
+		{ CompilationUnitModel objUnit = new CompilationUnitModel("PlainText");
 
 				// Interpreta el texto
 					ParseText(objUnit, strText);

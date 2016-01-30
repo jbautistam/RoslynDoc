@@ -81,38 +81,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\CompilerSymbols\Base\RemarksXml.cs" />
-    <Compile Include="Models\CompilerSymbols\Base\TypedModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Methods\BaseMethodModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Methods\ConstructorModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Methods\PropertyModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Simple\BaseParameterModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Simple\TypeParameterModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Structs\BaseComplexModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Structs\InterfaceModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Structs\StructModel.cs" />
-    <Compile Include="Models\Solutions\ProjectStructModel.cs" />
-    <Compile Include="Models\Solutions\ProjectStructModelCollection.cs" />
     <Compile Include="ProgramParser.cs" />
-    <Compile Include="Models\CompilerSymbols\Simple\ArgumentModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Structs\ClassModel.cs" />
-    <Compile Include="Models\CompilerSymbols\CompilationUnitModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Simple\EnumMemberModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Simple\EnumModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Base\LanguageBaseModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Methods\MethodModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Structs\NameSpaceModel.cs" />
-    <Compile Include="Models\CompilerSymbols\ProgramModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Base\LanguageStructModel.cs" />
-    <Compile Include="Models\CompilerSymbols\Base\LanguageStructModelCollection.cs" />
-    <Compile Include="Models\Solutions\FileVisualStudioModel.cs" />
-    <Compile Include="Models\Solutions\FileVisualStudioModelCollection.cs" />
-    <Compile Include="Models\Solutions\ProjectVisualStudioModel.cs" />
-    <Compile Include="Models\Solutions\ProjectVisualStudioModelCollection.cs" />
-    <Compile Include="Models\Solutions\SolutionVisualStudioModel.cs" />
     <Compile Include="Parser\FileParser.cs" />
     <Compile Include="Parser\SyntaxTreeDebug.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Parser\Solutions\FileVisualStudioModel.cs" />
+    <Compile Include="Parser\Solutions\FileVisualStudioModelCollection.cs" />
+    <Compile Include="Parser\Solutions\ProjectVisualStudioModel.cs" />
+    <Compile Include="Parser\Solutions\ProjectVisualStudioModelCollection.cs" />
+    <Compile Include="Parser\Solutions\SolutionVisualStudioModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -125,6 +102,10 @@
     <ProjectReference Include="..\LibMarkupLanguage\LibMarkupLanguage.csproj">
       <Project>{cb50d1d9-55e4-4a2b-8ec7-0adde8d7e3bd}</Project>
       <Name>LibMarkupLanguage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LibDocumentationGenerator.Models\LibDocumentationGenerator.Models.csproj">
+      <Project>{79076a5c-faea-4609-bdb9-1263bfa71185}</Project>
+      <Name>LibDocumentationGenerator.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -55,21 +55,12 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 			// Añade un salto de línea
 				sbBuilder.Append(Environment.NewLine);
 		}
-						
+
 		/// <summary>
 		///		Obtiene la cadena HTML
 		/// </summary>
-		public string GetHtml(string strTitle, string strDescription)
-		{ return string.Format(@"<html>
-																<head>
-																	<title>{0}</title>
-																	<meta name='description' content='{1}'>
-																</head>
-																<body>
-																	{2}
-																</body>
-														 </html>", 
-													strTitle, strDescription, sbBuilder.ToString());
+		public string GetHtml()
+		{ return sbBuilder.ToString();
 		}
 
 		/// <summary>

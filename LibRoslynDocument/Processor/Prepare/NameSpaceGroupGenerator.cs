@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 using Bau.Libraries.LibRoslynDocument.Models.Groups;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Structs;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Structs;
 
 namespace Bau.Libraries.LibRoslynDocument.Processor.Prepare
 {

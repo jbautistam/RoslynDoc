@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
 
 namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 {
@@ -8,7 +9,20 @@ namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 	///		Clase con los datos de un archivo de documentación
 	/// </summary>
 	public class DocumentFileModel
-	{ 
+	{ // Enumerados públicos
+			/// <summary>
+			///		Modo de búsqueda de un documento
+			/// </summary>
+			public enum SearchMode
+				{ 
+					/// <summary>Buscar por los elementos hijo</summary>
+					Childs,
+					/// <summary>Buscar por los elementos padre</summary>
+					Parent,
+					/// <summary>Buscar en los elementos hijo y padre</summary>
+					All
+				}
+
 		public DocumentFileModel(DocumentFileModel objParent, LanguageStructModel objStruct, int intOrder)
 		{ Parent = objParent;
 			LanguageStruct = objStruct;
@@ -30,19 +44,48 @@ namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 		}
 
 		/// <summary>
-		///		Archivo padre
+		///		Busca una estructura entre los documentos hijo o padre
 		/// </summary>
-		public DocumentFileModel Parent { get; private set; }
+		internal DocumentFileModel Search(LanguageStructModel objStruct, SearchMode intMode)
+		{ DocumentFileModel objDocument = null;
+
+				// Si estamos en el elemento buscado ...
+					if (CheckContains(objStruct))
+						objDocument = this;
+				// Busca el documento
+					if (objDocument == null && (intMode == SearchMode.All || intMode == SearchMode.Childs))
+						objDocument = Childs.Search(objStruct);
+					if (objDocument == null && (intMode == SearchMode.All || intMode == SearchMode.Parent))
+						objDocument = SearchByParent(objStruct);
+				// Devuelve el documento
+					return objDocument;
+		}
 
 		/// <summary>
-		///		Elementos hijo
+		///		Busca el documento por el padre
 		/// </summary>
-		public DocumentFileModelCollection Childs { get; } = new DocumentFileModelCollection();
+		internal DocumentFileModel SearchByParent(LanguageStructModel objStruct)
+		{ if (CheckContains(objStruct))
+				return this;
+			else if (Parent != null)
+				return Parent.SearchByParent(objStruct);
+			else
+				return null;
+		}
 
 		/// <summary>
-		///		Estructura documentada
+		///		Comprueba si es te documento se refiere a la estructura buscada
 		/// </summary>
-		public LanguageStructModel LanguageStruct { get; set; }
+		private bool CheckContains(LanguageStructModel objStruct)
+		{ return StructType == objStruct.IDType && Order == objStruct.Order;
+		}
+
+		/// <summary>
+		///		Transforma los vínculos de búsqueda de este documento
+		/// </summary>
+		internal void TransformSearchLinks(Dictionary<String, DocumentFileModel> dctLinks, string strPathBase)
+		{ MLBuilder.TransformSeachLinks(this, dctLinks, strPathBase);
+		}
 
 		/// <summary>
 		///		Obtiene la Url del documento
@@ -86,14 +129,50 @@ namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 		}
 
 		/// <summary>
+		///		Archivo padre
+		/// </summary>
+		public DocumentFileModel Parent { get; private set; }
+
+		/// <summary>
+		///		Elementos hijo
+		/// </summary>
+		public DocumentFileModelCollection Childs { get; } = new DocumentFileModelCollection();
+
+		/// <summary>
+		///		Estructura principal documentada
+		/// </summary>
+		public LanguageStructModel LanguageStruct { get; set; }
+
+		/// <summary>
+		///		Estructuras añadidas al documento
+		/// </summary>
+		public LanguageStructModelCollection StructsReferenced { get; } = new LanguageStructModelCollection();
+
+		/// <summary>
+		///		Generador de archivos intermedios de documentación
+		/// </summary>
+		public Processor.Writers.MLIntermedialBuilder MLBuilder { get; } = new Processor.Writers.MLIntermedialBuilder();
+
+		/// <summary>
 		///		Nombre del elemento descrito
 		/// </summary>
 		public string Name { get; set; }
 
 		/// <summary>
-		///		Orden del elemento (para las sobrecargas
+		///		Orden del elemento (para las sobrecargas)
 		/// </summary>
-		public int Order { get; set; }
+		public int Order 
+		{ get
+				{ if (LanguageStruct == null)
+						return 0;
+					else
+						return LanguageStruct.Order;
+				}
+			set
+				{ if (LanguageStruct != null)
+						LanguageStruct.Order = value;
+				}
+		}
 
 		/// <summary>
 		///		Tipo de estructura almacenada

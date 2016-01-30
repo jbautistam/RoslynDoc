@@ -15,7 +15,7 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 		/// <summary>
 		///		Convierte una serie de nodos XML en una cadena NHaml
 		/// </summary>
-		internal string Convert(string strActualPath, string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder)
+		internal string Convert(string strActualPath, MLIntermedialBuilder objMLBuilder)
 		{ // Guarda el generador
 				MLBuilder = objMLBuilder;
 			// Limpia el contenido
@@ -24,7 +24,7 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 				foreach (MLNode objMLNode in MLBuilder.Root.Nodes)
 					ConvertNode(strActualPath, objMLNode);
 			// Devuelve la cadena
-				return objBuilder.GetHtml(strTitle, strDescription);
+				return objBuilder.GetHtml();
 		}
 
 		/// <summary>
@@ -32,10 +32,14 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 		/// </summary>
 		private void ConvertNode(string strActualPath, MLNode objMLNode)
 		{	if (MLBuilder.CheckIsEmpty(objMLNode))
-				objBuilder.AddTag(GetStartTag(objMLNode, true));
-			else if (MLBuilder.CheckContainSpan(objMLNode))
-				objBuilder.AddTag(GetStartTag(objMLNode), GetSpansText(strActualPath, objMLNode) + GetEndTag(objMLNode.Name));
-			else if (MLBuilder.CheckIsComplex(objMLNode))
+				{ if (!MLBuilder.CheckIsSpanNode(objMLNode))
+						objBuilder.AddTag(GetStartTag(objMLNode, true));
+				}
+			else if (MLBuilder.CheckIsLinkNode(objMLNode))
+				objBuilder.AddTag(GetLinkTag(strActualPath, objMLNode));
+			else if (MLBuilder.CheckIsSpanNode(objMLNode))
+				objBuilder.AddTag(ConvertSpansText(strActualPath, objMLNode));
+			else 
 				{ // Crea la etiqueta y le añade la indentación
 						objBuilder.AddTag(GetStartTag(objMLNode), objMLNode.Value);
 						objBuilder.AddIndent();
@@ -46,17 +50,17 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 						objBuilder.RemoveIndent();
 						objBuilder.AddTag(GetEndTag(objMLNode.Name));
 				}
-			else
-				objBuilder.AddTag(GetStartTag(objMLNode), objMLNode.Value + GetEndTag(objMLNode.Name));
 		}
 
 		/// <summary>
 		///		Obtiene una etiqueta de inicio
 		/// </summary>
 		private string GetStartTag(MLNode objMLNode, bool blnIsAutoClose = false)
-		{ string strTag = "<" + objMLNode.Name;
+		{ string strTag;
 			string strAttributes = "";
 
+				// Inicializa la etiqueta
+					strTag = "<" + objMLNode.Name;
 				// Añade los atributos
 					foreach (MLAttribute objMLAttribute in objMLNode.Attributes)
 						strAttributes = strAttributes.AddWithSeparator(objMLAttribute.Name + "=\"" + objMLAttribute.Value + "\"", " ", false);
@@ -81,41 +85,53 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 		/// <summary>
 		///		Obtiene el texto de los spans de un nodo
 		/// </summary>
-		private string GetSpansText(string strActualPath, MLNode objMLNode)
+		private string ConvertSpansText(string strActualPath, MLNode objMLNode)
 		{ string strText = "";
 
-				// Crea el texto a partir de los nodos span
-					foreach (MLNode objMLChild in objMLNode.Nodes)
-						if (MLBuilder.CheckIsSpanNode(objMLChild))
-							strText = strText.AddWithSeparator(ConvertSpanText(objMLChild), " ", false);
-						else if (MLBuilder.CheckIsLinkNode(objMLChild))
-							strText = strText.AddWithSeparator(ConvertLink(strActualPath, objMLChild), " ", false);
-						else
-							strText = strText.AddWithSeparator(objMLChild.Value, " ", false);
-				// Devuelve el texto
-					return strText;
+				// Crea el texto a partir de los nodos de span
+					if (objMLNode.Nodes.Count == 0)
+						strText = GetSpanText(objMLNode.Value, MLBuilder.CheckIsBold(objMLNode), MLBuilder.CheckIsItalic(objMLNode));
+					else
+						foreach (MLNode objMLChild in objMLNode.Nodes)
+							if (MLBuilder.CheckIsSpanNode(objMLChild))
+								strText = strText.AddWithSeparator(GetSpanText(objMLChild.Value, 
+																															 MLBuilder.CheckIsBold(objMLNode) || MLBuilder.CheckIsBold(objMLChild),
+																															 MLBuilder.CheckIsItalic(objMLNode) || MLBuilder.CheckIsItalic(objMLChild)), 
+																									 " ", false);
+							else if (MLBuilder.CheckIsLinkNode(objMLChild))
+								strText = strText.AddWithSeparator(GetLinkTag(strActualPath, objMLChild), " ", false);
+							else
+								strText = strText.AddWithSeparator(objMLChild.Value, " ", false);
+					// Devuelve el texto convertido
+						return strText;
 		}
 
 		/// <summary>
-		///		Convierte el texto del span
+		///		Obtiene el texto de un span
 		/// </summary>
-		private string ConvertSpanText(MLNode objMLNode)
-		{ string strText = objMLNode.Value;
+		private string GetSpanText(string strText, bool blnIsBold, bool blnIsItalic)
+		{ string strTagStart = "", strTagEnd = "";
 
-				// Añade el texto que indica si está en negrita o en cursiva
-					if (MLBuilder.CheckIsBold(objMLNode))
-						strText = "<strong>" + strText + "</strong>";
-					if (MLBuilder.CheckIsItalic(objMLNode))
-						strText = "<em>" + strText + "</em>";
+				// Añade las etiquetas de apertura y cierre necesario
+					if (!strText.IsEmpty())
+						{ if (blnIsBold)
+								{	strTagStart += "<strong>";
+									strTagEnd = "</strong>" + strTagEnd;
+								}
+							if (blnIsItalic)
+								{ strTagStart += "<em>";
+									strTagEnd += "</em>" + strTagEnd;
+								}
+						}
 				// Devuelve el texto
-					return strText;
+					return strTagStart + strText + strTagEnd;
 		}
 
 		/// <summary>
-		///		Convierte el hipervínculo de un nodo
+		///		Obtiene la etiqueta de hipervínculo
 		/// </summary>
-		private string ConvertLink(string strActualPath, MLNode objMLNode)
-		{ return string.Format("<a href = \"{0}\">{1}</a> ", GetHtmlFileName(strActualPath, objMLNode), objMLNode.Value);
+		private string GetLinkTag(string strActualPath, MLNode objMLNode)
+		{ return string.Format("<a href='{0}'>{1}</a>", GetHtmlFileName(strActualPath, objMLNode), objMLNode.Value);
 		}
 
 		/// <summary>
@@ -137,7 +153,7 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Html
 						strHref = strHref.Substring(1);
 				// Cambia los caracteres de separación
 					if (!strHref.IsEmpty())
-								strHref = strHref.Replace('\\', '/');
+						strHref = strHref.Replace('\\', '/');
 				// Devuelve la URL
 					return strHref;
 		}

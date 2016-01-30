@@ -13,14 +13,16 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.Xml
 		/// <summary>
 		///		Graba la documentación Nhaml en un archivo
 		/// </summary>
-		public void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, string strPath)
-		{ Save(objDocument.Name, "", objMLBuilder, System.IO.Path.Combine(strPath, objDocument.GetPathLocal()));
+		public void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, 
+										 string strFileNameTemplate, string strPath)
+		{ Save(objDocument.Name, "", objMLBuilder, strFileNameTemplate, System.IO.Path.Combine(strPath, objDocument.GetPathLocal()));
 		}
 
 		/// <summary>
 		///		Graba la documentación Nhaml a partir de los datos pasados como parámetros
 		/// </summary>
-		public void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, string strPath)
+		public void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, 
+										 string strFileNameTemplate, string strPath)
 		{	MLFile objMLFile = GetMLFile(strTitle, strDescription, objMLBuilder.Root);
 
 				// Graba el archivo

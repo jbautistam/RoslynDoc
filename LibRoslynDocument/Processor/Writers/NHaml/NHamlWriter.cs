@@ -15,7 +15,8 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 		/// <summary>
 		///		Graba la documentación Nhaml en un archivo
 		/// </summary>
-		public void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, string strPath)
+		public void Save(DocumentFileModel objDocument, MLIntermedialBuilder objMLBuilder, 
+										 string strFileNameTemplate, string strPath)
 		{ Save(GetMLFile(objDocument, ConvertMLNode(objMLBuilder)),
 										 System.IO.Path.Combine(strPath, objDocument.GetPathLocal()));
 		}
@@ -23,7 +24,8 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 		/// <summary>
 		///		Graba la documentación Nhaml a partir de los datos pasados como parámetros
 		/// </summary>
-		public void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, string strPath)
+		public void Save(string strTitle, string strDescription, MLIntermedialBuilder objMLBuilder, 
+										 string strFileNameTemplate, string strPath)
 		{	Save(GetMLFile(strTitle, strDescription, ConvertMLNode(objMLBuilder)), strPath);
 		}
 

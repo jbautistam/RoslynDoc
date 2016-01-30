@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Bau.Libraries.LibHelper.Extensors;
 using Bau.Libraries.LibMarkupLanguage;
+using Bau.Libraries.LibRoslynDocument.Models.Documents;
 
 namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 {
@@ -10,30 +12,19 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 	/// </summary>
 	public class MLIntermedialBuilder
 	{ // Constantes privadas
-			private const string cnstStrTagRoot = "Root";
-			private const string cnstStrTagSpan = "Span";
+			private const string cnstStrTagRoot = "Page";
+			private const string cnstStrTagSpan = "Part";
 			private const string cnstStrTagBold = "IsBold";
 			private const string cnstStrTagItalic = "IsItalic";
 			private const string cnstStrTagLink = "Link";
+			private const string cnstStrTagSearchLink = "SearchLink";
 			private const string cnstStrTagHref = "Ref";
 
 		/// <summary>
 		///		Limpia el constructor
 		/// </summary>
 		public void Clear()
-		{ Root = new MLNode();
-		}
-
-		/// <summary>
-		///		Comprueba si un nodo tiene hijos "span"
-		/// </summary>
-		public bool CheckContainSpan(MLNode objMLNode)
-		{ // Comprueba los hijos
-				foreach (MLNode objMLChild in objMLNode.Nodes)
-					if (CheckIsSpanNode(objMLChild) || CheckIsLinkNode(objMLChild))
-						return true;
-			// Si ha llegado hasta aquí, no es span
-				return false;
+		{ Root = new MLNode(cnstStrTagRoot);
 		}
 
 		/// <summary>
@@ -48,14 +39,6 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		/// </summary>
 		public bool CheckIsComplex(MLNode objMLNode)
 		{ return objMLNode.Nodes.Count > 0;
-			//string [] arrStrComplex = { "ul", "table", "tr", "li" };
-
-			//	// Comprueba si es complejo
-			//		foreach (string strComplex in arrStrComplex)
-			//			if (strComplex.EqualsIgnoreCase(objMLNode.Name))
-			//				return true;
-			//	// Si ha llegado hasta aquí es porque no era complejo
-			//		return false;
 		}
 
 		/// <summary>
@@ -80,10 +63,31 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		}
 
 		/// <summary>
+		///		Comprueba si un atributo se corresponde con la negrita
+		/// </summary>
+		public bool CheckIsBold(MLAttribute objMLAttribute)
+		{	return objMLAttribute.Name == cnstStrTagBold;
+		}
+
+		/// <summary>
 		///		Comprueba si un nodo de span está definido como cursiva
 		/// </summary>
 		public bool CheckIsItalic(MLNode objMLNode)
 		{ return objMLNode.Attributes[cnstStrTagItalic].Value.GetBool();
+		}
+
+		/// <summary>
+		///		Comprueba si un atributo se corresponde con la cursiva
+		/// </summary>
+		public bool CheckIsItalic(MLAttribute objMLAttribute)
+		{ return objMLAttribute.Name == cnstStrTagItalic;
+		}
+
+		/// <summary>
+		///		Comprueba si un atributo es una referencia
+		/// </summary>
+		public bool CheckIsHref(MLAttribute objMLAttribute)
+		{ return objMLAttribute.Name == cnstStrTagHref;
 		}
 
 		/// <summary>
@@ -100,19 +104,6 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		}
 
 		/// <summary>
-		///		Obtiene un nodo para un listItem con una serie de span
-		/// </summary>
-		public MLNode GetListItem(params MLNode[] arrMLSpan)
-		{ MLNode objMLNode = new MLNode("li");
-
-				// Añade los elementos
-					foreach (MLNode objMLSpan in arrMLSpan)
-						objMLNode.Nodes.Add(objMLSpan);
-				// Devuelve el nodo
-					return objMLNode;
-		}
-
-		/// <summary>
 		///		Obtiene un vínculo
 		/// </summary>
 		public MLNode GetLink(string strTitle, string strUrl)
@@ -125,6 +116,24 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		}
 
 		/// <summary>
+		///		Obtiene un vínculo para un elemento que se va a sustituir por otro en el postproceso
+		/// </summary>
+		/// <returns>
+		///		Cuando se añade información como un nombre de tipo, nos interesa poder generar un
+		///	hipervínculo pero aún no sabemos en qué documento se ha creado la información, por eso
+		///	creamos un nodo de "vínculo a postprocesar" para modificarlo una vez generados todos los
+		///	documentos
+		/// </returns>
+		public MLNode GetSearchLink(string strTitle, string strUrlSearch)
+		{ MLNode objMLNode = new MLNode(cnstStrTagSearchLink, strTitle);
+
+				// Añade la referencia
+					objMLNode.Attributes.Add(cnstStrTagHref, strUrlSearch);
+				// Devuelve el nodo
+					return objMLNode;
+		}
+
+		/// <summary>
 		///		Obtiene el valor del atributo href de un hipervínculo
 		/// </summary>
 		public string GetHref(MLNode objMLNode)
@@ -132,110 +141,37 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers
 		}
 
 		/// <summary>
-		///		Añade una cabecera a la tabla
+		///		Transforma los vínculos de búsqueda
 		/// </summary>
-		public MLNode AddTable(MLNode objMLRoot, params string[] arrStrHeaders)
-		{ MLNode objMLTable = objMLRoot.Nodes.Add("table");
-
-				// Añade la fila
-					AddRowTable(objMLTable, true, arrStrHeaders);
-				// Devuelve el nodo de tabla
-					return objMLTable;
+		internal void TransformSeachLinks(DocumentFileModel objDocument, Dictionary<string, DocumentFileModel> dctLinks, string strPathBase)
+		{ foreach (MLNode objMLNode in Root.Nodes)
+				TransformSeachLinks(objDocument, dctLinks, objMLNode, strPathBase);
 		}
 
 		/// <summary>
-		///		Añade las celdas de una fila a la tabla
+		///		Transforma los vínculos de búsqueda
 		/// </summary>
-		public void AddRowTable(MLNode objMLTable, params string[] arrStrCells)
-		{ AddRowTable(objMLTable, false, arrStrCells);
-		}
-
-		/// <summary>
-		///		Añade las celdas de una fila a la tabla
-		/// </summary>
-		private void AddRowTable(MLNode objMLTable, bool blnIsHeader, params string[] arrStrCells)
-		{ MLNode objMLRow = objMLTable.Nodes.Add("tr");
-
-				// Añade las celdas
-					foreach (string strCell in arrStrCells)
-						if (blnIsHeader)
-							objMLRow.Nodes.Add("th", strCell);
-						else
-							objMLRow.Nodes.Add("td", strCell);
-		}
-
-		/// <summary>
-		///		Añade una celda a una fila
-		/// </summary>
-		internal MLNode GetCell(MLNode objMLRow, string strText, int intColSpan = 1)
-		{ MLNode objMLCell = objMLRow.Nodes.Add("td", strText);
-
-				// Le añade el ColSpan
-					AddColSpan(objMLCell, intColSpan);
-				// Devuelve el nodo
-					return objMLCell;
-		}
-
-		/// <summary>
-		///		Añade una celda con un nodo a una fila
-		/// </summary>
-		internal MLNode GetCell(MLNode objMLRow, MLNode objMLNode, int intColSpan = 1)
-		{ MLNode objMLCell = objMLRow.Nodes.Add("td");
-
-				// Añade el nodo
-					objMLCell.Nodes.Add(objMLNode);
-				// Añade el ColSpan
-					AddColSpan(objMLCell, intColSpan);
-				// Devuelve el nodo
-					return objMLCell;
-		}
-
-		/// <summary>
-		///		Añade una fila con un nodo a una tabla
-		/// </summary>
-		internal void AddRowNode(MLNode objMLTable, MLNode objMLNode, int intEmptyCells, int intColSpan)
-		{ MLNode objMLRow = objMLTable.Nodes.Add("tr");
-
-				// Añade las celdas vacías
-					AddEmptyCells(objMLRow, intEmptyCells);
-				// Añade una celda con un nodo
-					GetCell(objMLRow, objMLNode, intColSpan);
-		}
-
-		/// <summary>
-		///		Añade una fila con una serie de nodos a una tabla
-		/// </summary>
-		internal void AddRowNode(MLNode objMLTable, MLNodesCollection objColMLNodes, int intEmptyCells, int intColSpan)
-		{ MLNode objMLRow = objMLTable.Nodes.Add("tr");
-			MLNode objMLCell;
-
-				// Añade las celdas vacías
-					AddEmptyCells(objMLRow, intEmptyCells);
-				// Añade la celda con los nodos
-					objMLCell = GetCell(objMLRow, "", intColSpan);
-					foreach (MLNode objMLNode in objColMLNodes)
-						objMLCell.Nodes.Add(objMLNode);
-		}
-
-		/// <summary>
-		///		Añade celdas vacías a un nodo
-		/// </summary>
-		internal void AddEmptyCells(MLNode objMLRow, int intEmptyCells)
-		{	for (int intIndex = 0; intIndex < intEmptyCells; intIndex++)
-				GetCell(objMLRow, "");
-		}
-
-		/// <summary>
-		///		Añade un ColSpan a una celda
-		/// </summary>
-		private void AddColSpan(MLNode objMLCell, int intColSpan)
-		{	if (intColSpan != 1)
-				objMLCell.Attributes.Add("colspan", intColSpan);
+		private void TransformSeachLinks(DocumentFileModel objDocument, Dictionary<string, DocumentFileModel> dctLinks, MLNode objMLNode, string strPathBase)
+		{ if (objMLNode.Name == cnstStrTagSearchLink)
+				{ string strTagLink = objMLNode.Attributes[cnstStrTagHref].Value;
+					DocumentFileModel objDocumentTarget;
+						
+						// Obtiene la referencia
+							if (dctLinks.TryGetValue(strTagLink, out objDocumentTarget))
+								{	objMLNode.Name = cnstStrTagLink;
+									objMLNode.Attributes[cnstStrTagHref].Value = objDocumentTarget.GetUrl(strPathBase);
+								}
+							else
+								objMLNode.Name = cnstStrTagSpan;
+				}
+			else
+				foreach (MLNode objMLChild in objMLNode.Nodes)
+					TransformSeachLinks(objDocument, dctLinks, objMLChild, strPathBase);
 		}
 
 		/// <summary>
 		///		Nodo raíz
 		/// </summary>
-		public MLNode Root { get; private set; } = new MLNode();
+		public MLNode Root { get; private set; } = new MLNode(cnstStrTagRoot);
 	}
 }

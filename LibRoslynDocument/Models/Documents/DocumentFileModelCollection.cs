@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Bau.Libraries.LibHelper.Extensors;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
 
 namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 {
@@ -78,6 +78,64 @@ namespace Bau.Libraries.LibRoslynDocument.Models.Documents
 		/// </summary>
 		private void SortByNameInner()
 		{ Sort((objFirst, objSecond) => objFirst.Name.CompareTo(objSecond.Name));
+		}
+
+		/// <summary>
+		///		Transforma los vínculos de búsqueda
+		/// </summary>
+		internal void TransformSearchLinks(string strPathBase)
+		{ Dictionary<string, DocumentFileModel> dctLinks = new Dictionary<string, DocumentFileModel>();
+		
+				// Crea el diccionario con los vínculos 
+					SearchDocumentLinks(dctLinks, this);
+				// Transforma los vínculos
+					TransformSearchLinks(dctLinks, this, strPathBase);
+		}
+
+		/// <summary>
+		///		Obtiene las estructuras generadas y los documentos en que se han generado
+		/// </summary>
+		private void SearchDocumentLinks(Dictionary<string, DocumentFileModel> dctLinks, DocumentFileModelCollection objColDocuments)
+		{ foreach (DocumentFileModel objDocument in objColDocuments)
+				{ // Añade los nombres de las estructuras generadas en el documento
+						foreach (LanguageStructModel objStruct in objDocument.StructsReferenced)
+							if (!dctLinks.ContainsKey(objStruct.Name))
+								dctLinks.Add(objStruct.Name, objDocument);
+					// Añade los nombres de las estructuras de los documentos hijo
+						SearchDocumentLinks(dctLinks, objDocument.Childs);
+				}
+		}
+
+		/// <summary>
+		///		Transforma los vínculos de búsqueda utilizando el diccionario
+		/// </summary>
+		private void TransformSearchLinks(Dictionary<String, DocumentFileModel> dctLinks, DocumentFileModelCollection objColDocuments, string strPathBase)
+		{ foreach (DocumentFileModel objDocument in objColDocuments)
+				{ // Transforma los vínculos de búsqueda
+						objDocument.TransformSearchLinks(dctLinks, strPathBase);
+					// Transforma los documentos hijo
+						TransformSearchLinks(dctLinks, objDocument.Childs, strPathBase);
+				}
+		}
+
+		/// <summary>
+		///		Busca el documento que se asocia a una estructura
+		/// </summary>
+		internal DocumentFileModel Search(LanguageStructModel objStruct)
+		{ DocumentFileModel objSearch = null;
+
+				// Busca el elemento en la colección
+					foreach (DocumentFileModel objDocument in this)
+						if (objSearch == null)
+							if (objDocument.LanguageStruct != null &&
+									objDocument.LanguageStruct.IDType  == objStruct.IDType &&
+									objDocument.LanguageStruct.Name.EqualsIgnoreCase(objStruct.Name) &&
+									objDocument.Order == objStruct.Order)
+								objSearch = objDocument;
+							else
+								objSearch = objDocument.Childs.Search(objStruct);
+				// Devuelve el elemento localizado
+					return objSearch;
 		}
 	}
 }

@@ -19,26 +19,11 @@ namespace Bau.Libraries.LibRoslynDocument
 					/// <summary>Archivos Xml</summary>
 					Xml
 				}
-		/// <summary>
-		///		Modo de documentación
-		/// </summary>
-		public enum DocumentationMode
-			{ 
-				/// <summary>Indica que se muestra una página por clase / estructura</summary>
-				SimpleStructs,
-				/// <summary>Indica que se muestra una página por cada clase, estructura, método...</summary>
-				ComplexStructs
-			}
-		
+	
 		/// <summary>
 		///		Tipo de documentación
 		/// </summary>
-		public DocumentationType IDType { get; set; } = DocumentationType.Nhtml;
-
-		/// <summary>
-		///		Modo de generación de la documentación
-		/// </summary>
-		public DocumentationMode Mode { get; set; } = DocumentationMode.SimpleStructs;
+		public DocumentationType IDType { get; set; } = DocumentationType.Html;
 
 		/// <summary>
 		///		Indica si se documentan las estructuras públicas
@@ -59,5 +44,10 @@ namespace Bau.Libraries.LibRoslynDocument
 		///		Indica si se documentan las estructuras privadas
 		/// </summary>
 		public bool ShowPrivate { get; set; } = true;
+
+		/// <summary>
+		///		Nombre del archivo de plantillas
+		/// </summary>
+		public string TemplateFileName { get; set; }
 	}
 }

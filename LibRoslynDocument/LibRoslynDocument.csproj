@@ -45,12 +45,12 @@
     <Compile Include="DocumentationParameters.cs" />
     <Compile Include="Models\Documents\DocumentFileModel.cs" />
     <Compile Include="Models\Documents\DocumentFileModelCollection.cs" />
-    <Compile Include="Processor\Generators\AbstractFilesGenerator.cs" />
-    <Compile Include="Processor\Generators\SimpleFilesGenerator.cs" />
+    <Compile Include="Models\Templates\TemplateModel.cs" />
+    <Compile Include="Models\Templates\TemplateModelCollection.cs" />
     <Compile Include="Processor\Generators\IndexFileGenerator.cs" />
+    <Compile Include="Processor\Generators\TemplateDocumentGenerator.cs" />
     <Compile Include="Processor\Prepare\NameSpaceGroupGenerator.cs" />
     <Compile Include="Processor\Writers\IDocumentWriter.cs" />
-    <Compile Include="Processor\Writers\MLBuilderHelper.cs" />
     <Compile Include="Processor\Writers\MLIntermedialBuilder.cs" />
     <Compile Include="Processor\Writers\Html\HtmlBuilder.cs" />
     <Compile Include="Processor\Writers\Html\HtmlConversor.cs" />
@@ -58,12 +58,12 @@
     <Compile Include="Processor\Writers\NHaml\NHamlConversor.cs" />
     <Compile Include="Processor\Writers\NHaml\NHamlWriter.cs" />
     <Compile Include="Processor\Writers\Xml\XmlWriter.cs" />
-    <Compile Include="Processor\Generators\ComplexFilesGenerator.cs" />
     <Compile Include="Processor\Writers\NHaml\NHamlBuilder.cs" />
     <Compile Include="Models\Groups\NameSpaceGroupModel.cs" />
     <Compile Include="Models\Groups\NameSpaceGroupModelCollection.cs" />
     <Compile Include="Processor\ProgramDocumentationGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Templates\TemplateRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibHelper\LibHelper.csproj">
@@ -74,11 +74,16 @@
       <Project>{cb50d1d9-55e4-4a2b-8ec7-0adde8d7e3bd}</Project>
       <Name>LibMarkupLanguage</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibDocumentationGenerator.Models\LibDocumentationGenerator.Models.csproj">
+      <Project>{79076a5c-faea-4609-bdb9-1263bfa71185}</Project>
+      <Name>LibDocumentationGenerator.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibRoslynManager\LibRoslynManager.csproj">
       <Project>{de28e7dc-6e16-468d-9b11-b64bce7af327}</Project>
       <Name>LibRoslynManager</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Structs;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Structs;
 
 namespace Bau.Libraries.LibRoslynDocument.Models.Groups
 {

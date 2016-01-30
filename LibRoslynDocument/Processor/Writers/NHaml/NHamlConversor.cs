@@ -32,10 +32,14 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 		/// </summary>
 		private void ConvertNode(MLNode objMLNode)
 		{	if (MLBuilder.CheckIsEmpty(objMLNode))
-				AddNodeTag(objMLNode, null);
-			else if (MLBuilder.CheckContainSpan(objMLNode))
-				AddNodeTag(objMLNode, GetSpansText(objMLNode));
-			else if (MLBuilder.CheckIsComplex(objMLNode))
+				{ if (!MLBuilder.CheckIsSpanNode(objMLNode))
+						AddNodeTag(objMLNode, null);
+				}
+			else if (MLBuilder.CheckIsLinkNode(objMLNode))
+				objBuilder.AddText(GetNodeLink(objMLNode));
+			else if (MLBuilder.CheckIsSpanNode(objMLNode))
+				AddNodeSpan(objMLNode);
+			else
 				{ // Crea la etiqueta y le añade la indentación
 						AddNodeTag(objMLNode, objMLNode.Value);
 						objBuilder.AddIndent();
@@ -45,8 +49,6 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 					// Quita la indentación
 						objBuilder.RemoveIndent();
 				}
-			else
-				AddNodeTag(objMLNode, objMLNode.Value);
 		}
 
 		/// <summary>
@@ -69,7 +71,7 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 
 				// Añade los atributos del nodo
 					foreach (MLAttribute objMLAttribute in objMLNode.Attributes)
-						strAttributes = strAttributes.AddWithSeparator(objMLAttribute.Name + " = \"" + objMLAttribute.Value + "\"", " ", false);
+						strAttributes = strAttributes.AddWithSeparator(ConvertAttribute(objMLAttribute), " ", false);
 				// Añade las llaves
 					if (!strAttributes.IsEmpty())
 						strAttributes = " {" + strAttributes + " }";
@@ -80,41 +82,86 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 		/// <summary>
 		///		Obtiene el texto de los spans de un nodo
 		/// </summary>
-		private string GetSpansText(MLNode objMLNode)
+		private void AddNodeSpan(MLNode objMLNode)
 		{ string strText = "";
 
 				// Crea el texto a partir de los nodos span
-					foreach (MLNode objMLChild in objMLNode.Nodes)
-						if (MLBuilder.CheckIsSpanNode(objMLChild))
-							strText = strText.AddWithSeparator(ConvertSpanText(objMLChild), " ", false);
-						else if (MLBuilder.CheckIsLinkNode(objMLChild))
-							strText = strText.AddWithSeparator(ConvertLink(objMLChild), " ", false);
-						else
-							strText = strText.AddWithSeparator(objMLChild.Value, " ", false);
-				// Devuelve el texto
-					return strText;
+					if (objMLNode.Nodes.Count == 0)
+						strText = ConvertSpanText(objMLNode);
+					else
+						foreach (MLNode objMLChild in objMLNode.Nodes)
+							if (MLBuilder.CheckIsSpanNode(objMLChild))
+								strText = strText.AddWithSeparator(ConvertSpanText(objMLChild), " ", false);
+							else if (MLBuilder.CheckIsLinkNode(objMLChild))
+								strText = strText.AddWithSeparator(GetNodeLink(objMLChild), " ", false);
+							else
+								strText = strText.AddWithSeparator(objMLChild.Value, " ", false);
+				// Escribe el texto
+					objBuilder.AddText(strText);
 		}
 
 		/// <summary>
 		///		Convierte el texto del span
 		/// </summary>
 		private string ConvertSpanText(MLNode objMLNode)
-		{ string strText = objMLNode.Value;
+		{ string strStartTag = "";
+			string strEndTag = "";
+			string strAttributes = "";
 
 				// Añade el texto que indica si está en negrita o en cursiva
-					if (MLBuilder.CheckIsBold(objMLNode))
-						strText = "#b " + strText + "#";
-					if (MLBuilder.CheckIsItalic(objMLNode))
-						strText = "#em " + strText + "#";
+					if (MLBuilder.CheckIsBold(objMLNode) || MLBuilder.CheckIsItalic(objMLNode))
+						{ // Añade las etiquetas para el inicio y el fin
+								if (MLBuilder.CheckIsBold(objMLNode))
+									{ strStartTag = strStartTag.AddWithSeparator("#b", " ", false);
+										strEndTag = strEndTag.AddWithSeparator("#", " ", false);
+									}
+								if (MLBuilder.CheckIsItalic(objMLNode))
+									{ strStartTag = strStartTag.AddWithSeparator("#em", " ", false);
+										strEndTag = strEndTag.AddWithSeparator("#", " ", false);
+									}
+						}
+				// Añade los atributos
+					foreach (MLAttribute objMLAttribute in objMLNode.Attributes)
+						if (!MLBuilder.CheckIsBold(objMLAttribute) && !MLBuilder.CheckIsItalic(objMLAttribute))
+							strAttributes = strAttributes.AddWithSeparator(ConvertAttribute(objMLAttribute), " ", false);
+				// Añade las llaves a los atributos
+					if (!strAttributes.IsEmpty())
+						strAttributes = " { " + strAttributes + " } ";
 				// Devuelve el texto
-					return strText;
+					return (strStartTag + strAttributes + " " + objMLNode.Value + " " + strEndTag).TrimIgnoreNull();
 		}
 
 		/// <summary>
-		///		Convierte el hipervínculo de un nodo
+		///		Añade un nodo con el vínculo
 		/// </summary>
-		private string ConvertLink(MLNode objMLNode)
-		{ return string.Format("#a {{ href = \"{0}\" }} {1} #", MLBuilder.GetHref(objMLNode), objMLNode.Value);
+		private string GetNodeLink(MLNode objMLNode)
+		{ string strAttributes = "";
+
+				// Asigna los atributos
+					foreach (MLAttribute objMLAttribute in objMLNode.Attributes)
+						if (!MLBuilder.CheckIsHref(objMLAttribute))
+							strAttributes = strAttributes.AddWithSeparator(ConvertAttribute(objMLAttribute), " ", false);
+				// Añade el atributo con la referencia
+					strAttributes = strAttributes.AddWithSeparator(ConvertAttribute("href", MLBuilder.GetHref(objMLNode)), " ", false);
+				// Añade las llaves de los atributos
+					if (!strAttributes.IsEmpty())
+						strAttributes = "{ " + strAttributes + " }";
+				// Añade el nodo con el vínculo
+					return string.Format("#a {0} {1}#", strAttributes, objMLNode.Value);
+		}
+
+		/// <summary>
+		///		Convierte un atributo
+		/// </summary>
+		private string ConvertAttribute(MLAttribute objMLAttribute)
+		{ return ConvertAttribute(objMLAttribute.Name, objMLAttribute.Value);
+		}
+
+		/// <summary>
+		///		Convierte un atributo
+		/// </summary>
+		private string ConvertAttribute(string strName, string strValue)
+		{	return string.Format("{0} = \"{1}\"", strName, strValue);
 		}
 
 		/// <summary>

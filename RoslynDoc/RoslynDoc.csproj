@@ -73,6 +73,7 @@
       <HintPath>..\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -84,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +135,10 @@
       <Project>{d9e2dc6b-3e54-421f-9231-a4f3a799bc4c}</Project>
       <Name>LibHelper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LibDocumentationGenerator.Models\LibDocumentationGenerator.Models.csproj">
+      <Project>{79076a5c-faea-4609-bdb9-1263bfa71185}</Project>
+      <Name>LibDocumentationGenerator.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LibRoslynDocument\LibRoslynDocument.csproj">
       <Project>{f8a09b5b-83a1-4c35-b965-8468399f4523}</Project>
       <Name>LibRoslynDocument</Name>
@@ -141,6 +147,26 @@
       <Project>{de28e7dc-6e16-468d-9b11-b64bce7af327}</Project>
       <Name>LibRoslynManager</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Templates\ClassTemplate.tpt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Data\Templates\test.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Data\Templates\RootTemplate.tpt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Data\Templates\Styles\layout.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Data\Templates\Templates.tpt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

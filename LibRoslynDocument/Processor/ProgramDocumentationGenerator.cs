@@ -2,8 +2,9 @@
 
 using Bau.Libraries.LibRoslynDocument.Models.Documents;
 using Bau.Libraries.LibRoslynDocument.Models.Groups;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibRoslynDocument.Models.Templates;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
 
 namespace Bau.Libraries.LibRoslynDocument.Processor
 {
@@ -20,25 +21,26 @@ namespace Bau.Libraries.LibRoslynDocument.Processor
 		///		Procesa la generación de documentación de un programa
 		/// </summary>
 		internal DocumentFileModelCollection Process(ProgramModel objProgram)
-		{	Generators.AbstractFilesGenerator objFilesGenerator = GetFilesGenerator();
-			NameSpaceGroupModelCollection objColGroups = new Prepare.NameSpaceGroupGenerator().Generate(objProgram);
+		{ NameSpaceGroupModelCollection objColGroups = new Prepare.NameSpaceGroupGenerator().Generate(objProgram);
 			DocumentFileModelCollection objColDocuments = new DocumentFileModelCollection();
-				
+			
+				// Carga las plantillas
+					Templates = new Repository.Templates.TemplateRepository().Load(DocumentationProcessor.Parameters.TemplateFileName);
 				// Crea los documentos
 					foreach (NameSpaceGroupModel objGroup in objColGroups)
-						if (objFilesGenerator.MustGenerateFile(objGroup))
+						if (Templates.MustGenerateFile(objGroup, DocumentationProcessor.Parameters))
 							{ DocumentFileModel objDocument = new DocumentFileModel(null, objGroup.NameSpace, 0);
 
 									// Procesa la estructura del lenguaje
 										if (objGroup.NameSpace != null)
-											Generate(objFilesGenerator, objGroup.NameSpace, objDocument);
+											Generate(objGroup.NameSpace, objDocument);
 										else
 											objDocument.Name = objGroup.Name;
 									// Añade el documento a la colección
 										objColDocuments.Add(objDocument);
 							}
 				// Graba los documentos
-					SaveDocumentation(objFilesGenerator, objColDocuments);
+					ProcessDocuments(objColDocuments);
 				// Devuelve los documentos
 					return objColDocuments;
 		}
@@ -46,58 +48,86 @@ namespace Bau.Libraries.LibRoslynDocument.Processor
 		/// <summary>
 		///		Genera la documentación de una estructura
 		/// </summary>
-		private void Generate(Generators.AbstractFilesGenerator objFilesGenerator, LanguageStructModel objStruct, DocumentFileModel objParent)
+		private void Generate(LanguageStructModel objStruct, DocumentFileModel objParent)
 		{ foreach (LanguageStructModel objItem in objStruct.Items)
-				if (objFilesGenerator.MustGenerateFile(objItem))
+				if (Templates.MustGenerateFile(objItem, DocumentationProcessor.Parameters))
 					{ DocumentFileModel objDocument = new DocumentFileModel(objParent, objItem, objParent.Childs.SearchOrder(objItem));
 
 							// Añade el documento a los hijos
 								objParent.Childs.Add(objDocument);
 							// Añade los documentos hijo
-								Generate(objFilesGenerator, objItem, objDocument);
+								Generate(objItem, objDocument);
 					}
 		}
 
 		/// <summary>
 		///		Genera la documentación
 		/// </summary>
-		private void SaveDocumentation(Generators.AbstractFilesGenerator objFilesGenerator, DocumentFileModelCollection objColDocuments)
+		private void ProcessDocuments(DocumentFileModelCollection objColDocuments)
 		{ // Ordena los archivos por nombres
 				objColDocuments.SortByName();
 			// Genera el archivo de índice
 				DocumentationProcessor.Writer.Save("Indice", "Indice de la documentación", 
-																					 new Generators.IndexFileGenerator(UrlBaseDocuments).CreateIndex(objColDocuments), 
-																					 DocumentationProcessor.OutputPath);
+																					 new Generators.IndexFileGenerator().CreateIndex(objColDocuments, UrlBaseDocuments),
+																					 null, DocumentationProcessor.OutputPath);
 			// Genera los archivos de contenido
-				GenerateFilesContent(objColDocuments, objFilesGenerator);
+				GenerateFilesContent(objColDocuments);
+			// Transforma los hipervínculos
+				objColDocuments.TransformSearchLinks(UrlBaseDocuments);
+			// Graba los documentos
+				SaveDocuments(objColDocuments);
 		}
 
 		/// <summary>
 		///		Genera los archivos de contenido
 		/// </summary>
-		private void GenerateFilesContent(DocumentFileModelCollection objColDocuments, Generators.AbstractFilesGenerator objFilesGenerator)
+		private void GenerateFilesContent(DocumentFileModelCollection objColDocuments)
 		{	foreach (DocumentFileModel objDocument in objColDocuments)
-				{ Writers.MLIntermedialBuilder objBuilder = objFilesGenerator.CreateDocument(objDocument);
+				{ TemplateModel objTemplate = Templates.Search(objDocument.StructType);
+						
+						// Genera la documentación del archivo
+							if (objTemplate == null)
+								AddError(objDocument, "No se encuentra ninguna plantilla para este tipo de estructura");
+							else
+								try
+									{ Generators.TemplateDocumentGenerator objGenerator = new Generators.TemplateDocumentGenerator(this, objTemplate, objDocument, UrlBaseDocuments);
 
-						// Graba el documento
-							DocumentationProcessor.Writer.Save(objDocument, objBuilder, DocumentationProcessor.OutputPath);
-						// Graba los documentos hijo
-							GenerateFilesContent(objDocument.Childs, objFilesGenerator);
+											objGenerator.Process();
+									}
+								catch (Exception objException)
+									{ AddError(objDocument, "Error al generar el documento. " + objException.Message);
+									}
+						// Genera los documentos hijo
+							GenerateFilesContent(objDocument.Childs);
 				}
 		}
 
 		/// <summary>
-		///		Obtiene el generador de archivos
+		///		Graba los documentos
 		/// </summary>
-		private Generators.AbstractFilesGenerator GetFilesGenerator()
-		{ switch (DocumentationProcessor.Parameters.Mode)
-				{	case DocumentationParameters.DocumentationMode.SimpleStructs:
-						return new Generators.SimpleFilesGenerator(DocumentationProcessor.Parameters, UrlBaseDocuments);
-					case DocumentationParameters.DocumentationMode.ComplexStructs:
-						return new Generators.ComplexFilesGenerator(DocumentationProcessor.Parameters, UrlBaseDocuments);
-					default:
-						throw new NotImplementedException("No se reconoce ningún generador para " + DocumentationProcessor.Parameters.Mode);
+		private void SaveDocuments(DocumentFileModelCollection objColDocuments)
+		{ foreach (DocumentFileModel objDocument in objColDocuments)
+				{ // Graba el documento
+						DocumentationProcessor.Writer.Save(objDocument, objDocument.MLBuilder, 
+																							 Templates.Search(objDocument.StructType)?.FullFileNameRootTemplate, 
+																							 DocumentationProcessor.OutputPath);
+					// Graba los documentos hijo
+						SaveDocuments(objDocument.Childs);
 				}
+		}
+
+		/// <summary>
+		///		Añade un error
+		/// </summary>
+		private void AddError(DocumentFileModel objDocument, string strMessage)
+		{ AddError("Error: " + strMessage + ". Estructura: " + objDocument.Name + " (" + objDocument.StructType + ")");
+		}
+
+		/// <summary>
+		///		Añade un error
+		/// </summary>
+		private void AddError(string strError)
+		{ DocumentationProcessor.Errors.Add(strError);
 		}
 
 		/// <summary>
@@ -111,5 +141,10 @@ namespace Bau.Libraries.LibRoslynDocument.Processor
 		///		Procesador de la documentación
 		/// </summary>
 		internal DocumentationGenerator DocumentationProcessor { get; private set; }
+
+		/// <summary>
+		///		Plantillas
+		/// </summary>
+		internal TemplateModelCollection Templates { get; private set; }
 	}
 }

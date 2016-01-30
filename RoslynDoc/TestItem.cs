@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Base;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Base;
 
 /// <summary>
 ///		Clase sin espacio de nombres
 /// </summary>
-public class NoSpaceClass : Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.CompilationUnitModel
+public class NoSpaceClass : Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.CompilationUnitModel
 {
-	public NoSpaceClass(string strFileName) : base(null, strFileName) {}
+	public NoSpaceClass(string strFileName) : base(strFileName) {}
 
 	/// <summary>
 	///		Método de una clase sin espacio de nombres

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Bau.Libraries.LibHelper.Extensors;
-using Bau.Libraries.LibRoslynManager.Models.CompilerSymbols.Structs;
+using Bau.Libraries.LibDocumentationGenerator.Models.CompilerSymbols.Structs;
 
 namespace Bau.Libraries.LibRoslynDocument.Models.Groups
 {
@@ -32,7 +32,7 @@ namespace Bau.Libraries.LibRoslynDocument.Models.Groups
 									strDebug += " (Sin elementos semánticos)";
 								else
 									{ strDebug += " (Elementos ";
-										foreach (LibRoslynManager.Models.CompilerSymbols.Base.LanguageStructModel objStruct in objNameSpace.NameSpace.Items)
+										foreach (LibDocumentationGenerator.Models.CompilerSymbols.Base.LanguageStructModel objStruct in objNameSpace.NameSpace.Items)
 											strDebug += objStruct.Name + "; ";
 										strDebug += ")";
 									}

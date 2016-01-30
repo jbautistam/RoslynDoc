@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Bau.Libraries.LibHelper.Extensors;
+
 namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 {
 	/// <summary>
@@ -48,20 +50,29 @@ namespace Bau.Libraries.LibRoslynDocument.Processor.Writers.NHaml
 		///		Añade una etiqueta con su texto
 		/// </summary>
 		internal void AddTag(string strTag, string strText)
-		{ // Añade la indentación
-				if (Indent > 0)
-					sbBuilder.Append(new string('\t', Indent));
-			// Añade la etiqueta
-				if (!strTag.StartsWith("%") && !strTag.StartsWith("<%"))
-					sbBuilder.Append("%");
-				sbBuilder.Append(strTag);
-			// Añade el texto
-				if (!string.IsNullOrEmpty(strText))
-					sbBuilder.Append(" " + strText);
-			// Añade un salto de línea
-				sbBuilder.Append(Environment.NewLine);
+		{ if (!strTag.IsEmpty())
+				{ // Añade el salto de línea y la indentación
+						sbBuilder.Append(Environment.NewLine);
+						if (Indent > 0)
+							sbBuilder.Append(new string('\t', Indent));
+					// Añade la etiqueta
+						if (!strTag.StartsWith("%") && !strTag.StartsWith("<%"))
+							sbBuilder.Append("%");
+						sbBuilder.Append(strTag.TrimIgnoreNull());
+					// Añade el texto
+						if (!string.IsNullOrEmpty(strText))
+							sbBuilder.Append(" " + strText.TrimIgnoreNull());
+				}
 		}
-						
+		
+		/// <summary>
+		///		Añade un texto, presumiblemente una cadena de span (#x value), por eso se le suma uno a la indentación
+		/// </summary>
+		internal void AddText(string strText)
+		{ if (!strText.IsEmpty())
+				sbBuilder.Append(" " + strText.TrimIgnoreNull());
+		}
+
 		/// <summary>
 		///		Obtiene la cadena HTML
 		/// </summary>

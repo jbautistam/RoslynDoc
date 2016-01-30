@@ -22,5 +22,101 @@ namespace RoslynDoc.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Solution {
+            get {
+                return ((string)(this["Solution"]));
+            }
+            set {
+                this["Solution"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Template {
+            get {
+                return ((string)(this["Template"]));
+            }
+            set {
+                this["Template"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Output {
+            get {
+                return ((string)(this["Output"]));
+            }
+            set {
+                this["Output"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int IDType {
+            get {
+                return ((int)(this["IDType"]));
+            }
+            set {
+                this["IDType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WithPublic {
+            get {
+                return ((bool)(this["WithPublic"]));
+            }
+            set {
+                this["WithPublic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WithInternal {
+            get {
+                return ((bool)(this["WithInternal"]));
+            }
+            set {
+                this["WithInternal"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WithProtected {
+            get {
+                return ((bool)(this["WithProtected"]));
+            }
+            set {
+                this["WithProtected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WithPrivate {
+            get {
+                return ((bool)(this["WithPrivate"]));
+            }
+            set {
+                this["WithPrivate"] = value;
+            }
+        }
     }
 }

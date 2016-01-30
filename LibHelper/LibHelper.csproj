@@ -63,7 +63,7 @@
     <Compile Include="Extensors\DateTimeExtensor.cs" />
     <Compile Include="Extensors\DateTimeHelper.cs" />
     <Compile Include="Extensors\StringExtensor.cs" />
-    <Compile Include="Files\FileUri.cs" />
+    <Compile Include="Files\HelperFileUri.cs" />
     <Compile Include="Files\HelperFiles.cs" />
     <Compile Include="Formats\FormatHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
